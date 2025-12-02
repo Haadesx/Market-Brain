@@ -34,6 +34,8 @@ class Settings(BaseSettings):
         import os
         env_db_url = os.getenv("DATABASE_URL")
         if env_db_url:
+            if env_db_url.startswith("postgres://"):
+                env_db_url = env_db_url.replace("postgres://", "postgresql+asyncpg://", 1)
             return env_db_url
 
         
