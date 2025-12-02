@@ -35,7 +35,7 @@ class Settings(BaseSettings):
             username=info.data.get("POSTGRES_USER"),
             password=info.data.get("POSTGRES_PASSWORD"),
             host=info.data.get("POSTGRES_SERVER"),
-            port=info.data.get("POSTGRES_PORT"),
+            port=int(info.data.get("POSTGRES_PORT")),
             path=info.data.get("POSTGRES_DB") or "",
         ).unicode_string()
 
