@@ -54,6 +54,8 @@ services:
     name: marketbrain-redis
     region: ohio
     plan: free
+    ipAllowList: [] # Internal access only
+
 
 databases:
   - name: marketbrain-db
