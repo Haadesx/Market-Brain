@@ -1,0 +1,68 @@
+services:
+  # 1. Backend Service (Python)
+  - type: web
+    name: marketbrain-backend
+    env: python
+    region: ohio
+    plan: free
+    buildCommand: |
+      cd backend
+      pip install -r requirements.txt
+    startCommand: |
+      cd backend
+      ./start.sh
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.0
+      - key: DATABASE_URL
+        fromDatabase:
+          name: marketbrain-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: redis
+          name: marketbrain-redis
+          property: connectionString
+      - key: MLFLOW_TRACKING_URI
+        value: file:///var/lib/data/mlruns
+      # API Keys (User must set these in Dashboard)
+      - key: ALPHA_VANTAGE_API_KEY
+        sync: false
+      - key: NEWS_API_KEY
+        sync: false
+    disk:
+      name: marketbrain-data
+      mountPath: /var/lib/data
+      sizeGB: 1
+
+  # 2. Frontend Service (Node.js)
+  - type: web
+    name: marketbrain-frontend
+    env: node
+    region: ohio
+    plan: free
+    buildCommand: |
+      cd frontend
+      npm install
+      npm run build
+    startCommand: |
+      cd frontend
+      npm start
+    envVars:
+      - key: NODE_VERSION
+        value: 18.17.0
+      - key: NEXT_PUBLIC_API_URL
+        fromService:
+          type: web
+          name: marketbrain-backend
+          property: url
+        value: /api/v1 # Fallback, but 'fromService' should override or we append /api/v1 in code
+
+databases:
+  - name: marketbrain-db
+    databaseName: marketbrain
+    user: marketbrain
+    plan: free # Postgres 14 (No Timescale on free tier, standard PG will work for basic features)
+
+  - name: marketbrain-redis
+    plan: free # Redis 6
