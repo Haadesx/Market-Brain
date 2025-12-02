@@ -6,6 +6,23 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 
 export default function AdminPage() {
+    const [models, setModels] = useState([
+        { id: "xgboost_1d_v1", type: "XGBoost", horizon: "1d", status: "Production", metrics: { rmse: 0.012 } },
+        { id: "lstm_1d_v2", type: "LSTM", horizon: "1d", status: "Staging", metrics: { rmse: 0.011 } },
+        { id: "baseline_ma", type: "MovingAverage", horizon: "1d", status: "Archived", metrics: { rmse: 0.015 } },
+    ])
+
+    const handleRetrain = (id: string) => {
+        alert(`Triggered retraining for ${id}`)
+    }
+
+    const handlePromote = (id: string) => {
+        setModels(models.map(m => {
+            if (m.id === id) return { ...m, status: "Production" }
+            if (m.status === "Production" && m.horizon === models.find(x => x.id === id)?.horizon) return { ...m, status: "Archived" }
+            return m
+        }))
+    }
 
     return (
         <div className="space-y-6">
