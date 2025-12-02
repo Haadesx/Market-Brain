@@ -30,6 +30,13 @@ class Settings(BaseSettings):
         if isinstance(v, str):
             return v
         
+        # Prioritize DATABASE_URL from environment (Render)
+        import os
+        env_db_url = os.getenv("DATABASE_URL")
+        if env_db_url:
+            return env_db_url
+
+        
         return PostgresDsn.build(
             scheme="postgresql+asyncpg",
             username=info.data.get("POSTGRES_USER"),
