@@ -47,10 +47,8 @@ services:
       - key: NODE_VERSION
         value: 18.17.0
       - key: NEXT_PUBLIC_API_URL
-        fromService:
-          type: web
-          name: marketbrain-backend
-          property: url
+        sync: false
+
 
 databases:
   - name: marketbrain-db
